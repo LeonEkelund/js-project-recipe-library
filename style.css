@@ -129,7 +129,7 @@ h2 {
 
 .recipe-card {
   display: flex;
-  width: 300px;
+  width: 250px;
   padding: 16px 16px 24px 16px;
   flex-direction: column;
   align-items: flex-start;
@@ -138,12 +138,14 @@ h2 {
   background: #FFF;
   border-radius: 16px;
   margin: 0 auto;
+  margin-bottom: 50px;
 
 }
 
 .recipe-card img {
-  width: 100%;
+  width: 80%;
   border-radius: 8px;
+  margin: 0 auto;
 }
 
 .recipe-card:hover {
@@ -202,7 +204,9 @@ h2 {
     gap: 88px;
   }
 
-
+..recipe-card {
+  width: 300pxgit;
+}
 
   .button-section {
     display: flex;

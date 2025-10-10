@@ -1,6 +1,6 @@
 //API VARIABLES
 const apiKey = "bd0cc269e37b44dc9363d356be6f251a";
-const url2 = `https://api.spoonacular.com/recipes/complexSearch?number=5&addRecipeInformation=true&apiKey=${apiKey}&cuisine=Asian,Italian,Mexican,Mediterranean,Middle Eastern,European`;
+const url2 = `https://api.spoonacular.com/recipes/complexSearch?number=5&sort=random&addRecipeInformation=true&apiKey=${apiKey}&cuisine=Asian,Italian,Mexican,Mediterranean,Middle Eastern,European`;
 
 
 
@@ -37,19 +37,20 @@ const fetchData = () => {
     .then(res => res.json())
     .then(data => {
       recipesData = data.results.map(recipe => ({
-        // ändrat till results från recipes för att fixa complexsearch
         id: recipe.id,
         title: recipe.title,
         image: recipe.image,
         readyInMinutes: recipe.readyInMinutes,
         cuisine: normalizeCuisine(recipe.cuisines?.[0]),
-        summary: recipe.summary,
         //    cuisine: recipe.cuisines[0] || "Unknown",  detta ör ändrat till den över
+        summary: recipe.summary
       }));
       currentRecipes = recipesData;
       showRecipes(recipesData);
     })
     .catch(err => console.error("Error fetching data:", err)); //lagg till api quota been reacheddddd
+
+
 };
 
 
