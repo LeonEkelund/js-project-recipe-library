@@ -10,13 +10,18 @@ const filterBtns = document.querySelectorAll('.filter-btn');
 const sortBtns = document.querySelectorAll('.sort-btn');
 const randomBtn = document.getElementById('randomBtn');
 
-
+const showMessage = (message) => {
+  recipesContainer.innerHTML = `
+    <div class="message">
+      <p>${message}</p>
+    </div>
+  `;
+};
 
 let recipesData = [];
 let currentRecipes = [];
 
-//test
-
+// NORMALIZE THE CUISINES
 const normalizeCuisine = (cuisine) => {
   if (!cuisine) return "Unknown";
 
@@ -31,26 +36,36 @@ const normalizeCuisine = (cuisine) => {
   return cuisine;
 };
 
-
+// FETCHING API
 const fetchData = () => {
   fetch(url2)
     .then(res => res.json())
     .then(data => {
+      if (!data.results) {
+        showMessage("Daily API quota reached or an error occurred. Please try again later.");
+        return;
+      }
+
       recipesData = data.results.map(recipe => ({
         id: recipe.id,
         title: recipe.title,
         image: recipe.image,
         readyInMinutes: recipe.readyInMinutes,
         cuisine: normalizeCuisine(recipe.cuisines?.[0]),
-        //    cuisine: recipe.cuisines[0] || "Unknown",  detta ör ändrat till den över
         summary: recipe.summary
       }));
+
       currentRecipes = recipesData;
-      showRecipes(recipesData);
+
+      if (recipesData.length === 0) {
+        showMessage("No recipes found.");
+      } else {
+        showRecipes(recipesData);
+      }
     })
-    .catch(err => console.error("Error fetching data:", err)); //lagg till api quota been reacheddddd
-
-
+    .catch(() => {
+      showMessage("Unable to load recipes. Please check your connection or try again later.");
+    });
 };
 
 
@@ -61,7 +76,7 @@ fetchData();
 // FUNCTION TO SHOW RECIPES
 const showRecipes = (recipesToShow = recipesData) => {
 
-  currentRecipes = recipesToShow; // store the current state
+  currentRecipes = recipesToShow;
   recipesContainer.innerHTML = '';
 
   recipesToShow.forEach(recipe => {
@@ -85,7 +100,7 @@ const showRecipes = (recipesToShow = recipesData) => {
 
 // FUNCTION FOR BUTTONS
 
-//filTER BUTTONS
+//FILTER BUTTONS
 filterBtns.forEach(btn => {
   btn.addEventListener("click", () => {
     const selectedCuisine = btn.id.toLowerCase();
@@ -98,30 +113,13 @@ filterBtns.forEach(btn => {
     filterBtns.forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
 
-    showRecipes(filtered);
+    if (filtered.length === 0) {
+      showMessage(`No ${selectedCuisine} recipes found.`);
+    } else {
+      showRecipes(filtered);
+    }
   });
 });
-
-// filterBtns.forEach(btn => {
-//   btn.addEventListener("click", () => {
-//     const selectedCuisine = btn.id.toLowerCase();
-
-//     const filtered =
-//       selectedCuisine === "all"
-//         ? recipesData
-//         : recipesData.filter(r => r.cuisine.toLowerCase() === selectedCuisine);
-
-//     filterBtns.forEach(b => b.classList.remove("active"));
-//     btn.classList.add("active");
-
-//     if (filtered.length === 0) {
-//       showMessage(`No ${selectedCuisine} recipes found.`);
-//     } else {
-//       showRecipes(filtered);
-// //     }
-// //   });
-// // });
-
 
 
 
@@ -146,15 +144,11 @@ sortBtns.forEach(btn => {
 
 
 // RANDOMBUTTON
-
-
 randomBtn.addEventListener('click', () => {
   //RANDOMNUMBER
   const randomIndex = Math.floor(Math.random() * recipesData.length);
 
-  //GETRECIPE
   const randomRecipe = recipesData[randomIndex];
 
-  //SHOW THAT RECIPE
   showRecipes([randomRecipe]);
 });
